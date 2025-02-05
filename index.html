@@ -3,9 +3,36 @@
 
 <head>
   <script>
-    window.onload = function() {
-      var context = new AudioContext();
-    }
+    window.addEventListener('load', function() {
+      // Create the AudioContext on load
+      const audioContext = new AudioContext();
+
+      // Function to resume the AudioContext if it is suspended
+      function resumeAudioContext() {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume().then(() => {
+            console.log('AudioContext resumed successfully!');
+          });
+        }
+      }
+
+      // Listen for user interactions to resume the AudioContext
+      document.body.addEventListener('click', resumeAudioContext);
+      document.body.addEventListener('keydown', resumeAudioContext);
+
+      // Optional: remove the event listeners after resuming to avoid unnecessary calls
+      function removeListeners() {
+        document.body.removeEventListener('click', resumeAudioContext);
+        document.body.removeEventListener('keydown', resumeAudioContext);
+      }
+      
+      // When the context resumes, remove the listeners
+      audioContext.onstatechange = function() {
+        if (audioContext.state === 'running') {
+          removeListeners();
+        }
+      };
+    });
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
